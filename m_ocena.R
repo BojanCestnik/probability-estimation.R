@@ -4,7 +4,7 @@
 
 pbase_global <- seq(0.0, 1.0, length = 11)
 pbase_global[1] <- 0.01
-pbase_global[21] <- 0.99
+pbase_global[11] <- 0.99
 pbase_global
 
 # generate n (1000) bernoulli binomial instances (outcomes of 0 and 1)

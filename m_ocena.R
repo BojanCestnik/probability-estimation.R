@@ -22,3 +22,5 @@ inst_0_70 <- rbinom(n, 1, 0.70)
 inst_0_80 <- rbinom(n, 1, 0.80)
 inst_0_90 <- rbinom(n, 1, 0.90)
 inst_0_99 <- rbinom(n, 1, 0.99)
+
+### Setup of experimental data and functions - END

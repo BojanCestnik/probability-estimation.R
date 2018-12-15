@@ -150,19 +150,19 @@ aprox <- function(x) {
 
 # classifier measures accuracy, sensitivity and specificity
 accuracy <- function(cm) {
-  #cm = array(TP, FP, FN, TN) 
+  # cm = array(TP, FP, FN, TN) 
   acc <- (cm[1]+cm[4])/(cm[1]+cm[2]+cm[3]+cm[4])
   acc
 }
 
 sensitivity <- function(cm) {
-  #cm = array(TP, FP, FN, TN) 
+  # cm = array(TP, FP, FN, TN) 
   acc <- (cm[1])/(cm[1]+cm[3])
   acc
 }
 
 specificity <- function(cm) {
-  #cm = array(TP, FP, FN, TN) 
+  # cm = array(TP, FP, FN, TN) 
   acc <- (cm[4])/(cm[2]+cm[4])
   acc
 }
@@ -180,15 +180,15 @@ specificity <- function(cm) {
 #   padistort: float distortion of prior probability
 prob.AE <- function(estimation_method, sample_testing, sample_training, sample_training_distort, 
                      start_inst, len_inst, pa, m, padistort) {
-  #determine sample_training (taking sample_training_distort into account)
+  # determine actual_sample_training from sample_training and taking sample_training_distort into account
   actual_sample_training <- sample_training
-  if (sample_training_distort > 0) {
+  if (sample_training_distort > 0) { # random distortion
     line_min <- sample_training - sample_training_distort
     line_min <- max(1, line_min)
     line_max <- sample_training + sample_training_distort
     line_max <- min(21, line_max)
     actual_sample_training <- sample(c(line_min:line_max), 1)
-  } else if (sample_training_distort < 0) {
+  } else if (sample_training_distort < 0) { # extreme distortion
     line_min <- sample_training + sample_training_distort
     line_min <- max(1, line_min)
     line_max <- sample_training - sample_training_distort
@@ -200,7 +200,7 @@ prob.AE <- function(estimation_method, sample_testing, sample_training, sample_t
       actual_sample_training <- line_max
     }
   }
-  #determine actual pa (taking padistort into account)
+  # determine actual panew from pa and padistort
   if (padistort < -0.0001) { # use extreme distortion padistort
     tmp <- sample(c(1:2), 1)
     if (tmp == 1) {
@@ -317,7 +317,7 @@ prob.sd.MAE <- function(estimation_method, sample_testing, sample_training, samp
 # parameters: see prob.AE
 prob.MSE <- function(estimation_method, sample_testing, sample_training, sample_training_distort, 
                      start_inst, len_inst, pa, m, padistort) {
-  #determine sample_training (taking sample_training_distort into account)
+  # determine actual_sample_training 
   actual_sample_training <- sample_training
   if (sample_training_distort > 0) {
     line_min <- sample_training - sample_training_distort
@@ -337,7 +337,7 @@ prob.MSE <- function(estimation_method, sample_testing, sample_training, sample_
       actual_sample_training <- line_max
     }
   }
-  #determine actual pa (taking padistort into account)
+  # determine actual panew
   if (padistort < -0.0001) { # use extreme distortion padistort
     tmp <- sample(c(1:2), 1)
     if (tmp == 1) {
@@ -430,7 +430,7 @@ prob.diff.MAE <- function(MAE1, MAE2)
 
 ### Setup of experimental data and functions - END
 
-### Figure 1
+### Figure: Comparison of the probability estimations with relative frequency and Lapalace's rule
 n <- 100500
 set.seed(123)
 inst_70 <- rbinom(n, 1, 0.70)
@@ -459,7 +459,7 @@ legend("topright", legend=c("relfr", "laplace"),
        pch=c(NA, NA), cex=1.2)
 
 
-### Figure 2
+### Figure The estimation with m-estimate
 n <- 100
 nn <- 10
 ss <- 3
@@ -494,7 +494,7 @@ legend("bottomright", legend=c("relative frequency", "prior probability", "m-est
        col=c("black", "black", "black"), lty=c(3,2,1), lwd=2,
        pch=c(NA, NA, NA), cex=1.2)
 
-### Figure 3
+### Figure Smoothing with Laplace's rule and simples flat
 method_set <- c("prob.relfr", "prob.flat", "prob.laplace")
 distort_sample <- 0
 distort_pa <- 0.0
@@ -538,15 +538,14 @@ legend("topright", legend=c("relfr", "flat", "laplace"),
        pch=c(21, 22, 23), cex=1.2)
 
 
-### Figures 4, 5, 6, 7, 8,   18, 19, 20,   25, 26, 27,   33, 34, 35, 36, 37
-myFigure <- "37"
+### Figures 1, 2, 3, 4, 5,  6,  7,  8,   10
+myFigure <- "10"
 method_set <- c("prob.relfr", "prob.laplace", "prob.piegat", "prob.cestnik")
-l_set <- switch(myFigure, "4" = c(1), "5" = c(2), "6" = c(3), "7" = c(10), "8" = c(100), 
-                "18" = c(1), "19" = c(1), "20" = c(1), 
-                "25" = c(1), "26" = c(1), "27" = c(1), 
-                "33" = c(0), "34" = c(0), "35" = c(0), "36" = c(0), "37" = c(0), c(1))
-distort_sample <- switch(myFigure, "25" = 10, "26" = 10, "27" = 10, 0) 
-distort_pa <- switch(myFigure, "18" = 0.3, "19" = 0.5, "20" = 1.0, "26" = 0.3, "27" = 0.5, 0.0)
+l_set <- switch(myFigure, "1" = c(1), "2" = c(2), "3" = c(3), "4" = c(10), "5" = c(100), 
+                "6" = c(1), "7" = c(1), "8" = c(1), 
+                "10" = c(0), c(1))
+distort_sample <- 0 
+distort_pa <- switch(myFigure, "6" = 0.3, "7" = 0.5, "8" = 1.0, 0.0)
 m <- 2
 err.list <- list()
 sd.list <- list()
@@ -575,6 +574,7 @@ d1 <- c(mean(err.list[[1]]), 0, 0, 0)
 d2 <- c(mean(err.list[[2]]), prob.diff.MAE(err.list[[2]], err.list[[1]])[2],  0, 0)
 d3 <- c(mean(err.list[[3]]), prob.diff.MAE(err.list[[3]], err.list[[1]])[2],  prob.diff.MAE(err.list[[3]], err.list[[2]])[2], 0)
 d4 <- c(mean(err.list[[4]]), prob.diff.MAE(err.list[[4]], err.list[[1]])[2],  prob.diff.MAE(err.list[[4]], err.list[[2]])[2], prob.diff.MAE(err.list[[4]], err.list[[3]])[2])
+# AMAE and ADIFF
 round(d1, 4)
 round(d2, 4)
 round(d3, 4)
@@ -592,7 +592,7 @@ lines(p, err.list[[2]], pch=22, col="black", type="o", lty=2, lwd=1)
 lines(p, err.list[[3]], pch=23, col="black", type="o", lty=2, lwd=1) 
 lines(p, err.list[[4]], pch=24, col="black", type="o", lty=2, lwd=1) 
 
-if (myFigure == "4") {
+if (myFigure == "1") {
   abline(v=c(0.14,0.29), col=c("gray", "gray"), lty=c(2,2), lwd=c(3, 3))
   abline(v=c(1-0.14,1-0.29), col=c("gray", "gray"), lty=c(2,2), lwd=c(3, 3))
   text(x=0.07, y=0.01, labels="extra-low", cex=1.1)
@@ -602,7 +602,7 @@ if (myFigure == "4") {
   text(x=0.93, y=0.01, labels="extra-high", cex=1.1)
 }
 
-if (myFigure == "5") {
+if (myFigure == "2") {
   abline(v=c(0.12,0.22), col=c("gray", "gray"), lty=c(2,2), lwd=c(3, 3))
   abline(v=c(1-0.12,1-0.22), col=c("gray", "gray"), lty=c(2,2), lwd=c(3, 3))
   text(x=0.06, y=0.01, labels="extra-low", cex=1.1)
@@ -612,7 +612,7 @@ if (myFigure == "5") {
   text(x=0.94, y=0.01, labels="extra-high", cex=1.1)
 }
 
-if (myFigure == "6") {
+if (myFigure == "3") {
   abline(v=c(0.11,0.18), col=c("gray", "gray"), lty=c(2,2), lwd=c(3, 3))
   abline(v=c(1-0.11,1-0.18), col=c("gray", "gray"), lty=c(2,2), lwd=c(3, 3))
   text(x=0.04, y=0.01, labels="extra-low", cex=1.1)
@@ -622,7 +622,7 @@ if (myFigure == "6") {
   text(x=0.96, y=0.01, labels="extra-high", cex=1.1)
 }
 
-if (myFigure == "7") {
+if (myFigure == "4") {
   abline(v=c(0.06,0.08), col=c("gray", "gray"), lty=c(2,2), lwd=c(3, 3))
   abline(v=c(1-0.06,1-0.08), col=c("gray", "gray"), lty=c(2,2), lwd=c(3, 3))
   text(x=0.02, y=0.01, labels="extra-", cex=1.1)
@@ -639,29 +639,61 @@ if (myFigure == "7") {
   text(x=0.98, y=0.00, labels="high", cex=1.1)
 }
 
-if (myFigure %in% c("4", "5", "6", "7", "8", "18", "19", "20", "25")) {
+if (myFigure %in% c("1", "2", "3", "4", "5", "6", "7", "8")) {
   legend("topleft", legend=c("relfr", "laplace", "piegat", "cestnik"),
          col=c("black", "black", "black", "black"), lty=c(2,2,2,2), 
          pch=c(21, 22, 23, 24), cex=1.1)
 }
 
-if (myFigure %in% c("34", "35", "36", "37")) {
+if (myFigure %in% c("10")) {
   legend("topright", legend=c("relfr", "laplace", "piegat", "cestnik"),
        col=c("black", "black", "black", "black"), lty=c(2,2,2,2), 
        pch=c(21, 22, 23, 24), cex=1.1)
 }
 
-if (myFigure %in% c("33")) {
-  legend("bottomright", legend=c("relfr", "laplace", "piegat", "cestnik"),
-       col=c("black", "black", "black", "black"), lty=c(2,2,2,2), 
-       pch=c(21, 22, 23, 24), cex=1.1)
-}
 
-if (myFigure %in% c("26", "27")) {
-  legend("bottomleft", legend=c("relfr", "laplace", "piegat", "cestnik"),
-       col=c("black", "black", "black", "black"), lty=c(2,2,2,2), 
-       pch=c(21, 22, 23, 24), cex=1.1)
-}
+library(ggplot2)
+library(forcats)
+library(reshape2)
+library(scmamp)
 
+### Figure 9
+# comparison of performance wit the approach by Demšar & Garcia et al.: 
+# https://cran.r-project.org/web/packages/scmamp/vignettes/Statistical_assessment_of_the_differences.html
+# Statistical Assessment of the Differences
+CDy <- read.csv("W:/CDy99.csv", stringsAsFactors = FALSE, sep=";", dec=",")
+CDy
+CDy$ind <- NULL
+CDx <- -CDy
+names(CDx)
+mean(CDx$relfr)
+mean(CDx$laplace)
+mean(CDx$piegat)
+mean(CDx$cestnik)
+mean(CDx$cestnik_pd0.3)
+mean(CDx$cestnik_pd0.5)
+mean(CDx$cestnik_pd1.0)
 
+plotDensities(data=CDx, size=1.1)
+
+qqplot <- qqplotGaussian (CDx[,"cestnik"], size=5 , col="orchid")
+qqplot + theme_classic()
+
+friedmanTest(CDx)
+
+imanDavenportTest(CDx)
+
+friedmanAlignedRanksTest(CDx)
+
+quadeTest(CDx)
+
+#Pairwise differences
+test <- nemenyiTest (CDx, alpha=0.01)
+test
+
+test$diff.matrix
+
+abs(test$diff.matrix) > test$statistic
+
+plotCD (CDx, alpha=0.01, cex=0.9) # Figure 9
 
